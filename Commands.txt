@@ -1,0 +1,10 @@
+===github====
+git pull --rebase origin master
+git push origin master
+
+===deploy====
+heroku git:remote -a atlas-bot
+git pull --rebase heroku master
+git push heroku master
+
+
