@@ -112,4 +112,4 @@ async def on_message(message):
         except Exception as e:
                 await message.channel.send(e)
 
-client.run('Nzg0MjA5Mjg3NzcyODk3MzMw.X8l90A.aytAT1tqujNP0_jDsu23cvf5KoI')
+client.run('Nzg0MjA5Mjg3NzcyODk3MzMw.X8l90A.ynoCu0yRkcgqE_pOKMfbHbOVt-c')
