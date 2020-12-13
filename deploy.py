@@ -65,11 +65,7 @@ async def on_voice_state_update(member, before, after):
         queue.remove(member)
 @client.event
 async def on_member_join(member):
-    try:
-        await member.add_roles(member.guild.get_role(781443027604471859))
-    except Exception as e:
-        await message.channel.send(e)
-
+    await member.add_roles(member.guild.get_role(781443027604471859))
 
 @client.event
 async def on_message(message):
