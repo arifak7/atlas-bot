@@ -11,6 +11,7 @@ role_message=785479442788778014
 member_role=785480963009806367
 auto_deafen=False #default
 on_going=False
+auto_queue=False
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -32,15 +33,9 @@ async def on_raw_reaction_add(payload):
 @client.event
 async def on_voice_state_update(member, before, after):
     global on_going
+
     if ((after.channel) and after.channel.id == waiting_room):
         queue.append(member)
-
-    if ((before.channel) and before.channel.id == waiting_room):
-        if((after.channel) and (after.channel.id!=among_us_1)):
-            queue.remove(member)
-        if(not(after.channel)):
-            queue.remove(member)
-
 
     # i have no clue why this works, but i use xnor to determine consistency between deaf and mute
     # then run a check with before to make sure the current action doesnt trigger future event
@@ -56,20 +51,18 @@ async def on_voice_state_update(member, before, after):
                 on_going=False
 
     #check if channel 10 or more
-    if (len(member.guild.get_channel(among_us_1).members) ==9):
-        if ((((before.channel) and before.channel.id == among_us_1) and queue) and ((after.channel) and after.channel.id==waiting_room)):
-            # to avoid error, checking if the user is in the channel without removed in queue
+    if (len(member.guild.get_channel(among_us_1).members) ==9) and auto_queue:
+        if (((before.channel) and before.channel.id == among_us_1) and queue):
             for user in queue:
                 if ((user.voice) and user.voice.channel.id == waiting_room):
                     try:
                         if (len(user.guild.get_channel(among_us_1).members) < 10):
-                            queue.pop(0)
-                            await user.move_to(user.guild.get_channel(among_us_1))
+                            print(user)
+ #                           await user.move_to(user.guild.get_channel(among_us_1))
                     except Exception as e:
-                        queue.insert(0, user)
                         await message.channel.send(e)
-                else:
-                    queue.pop(0)
+    if ((before.channel) and before.channel.id == waiting_room):
+        queue.remove(member)
 @client.event
 async def on_member_join(member):
     try:
@@ -83,6 +76,18 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+    if (message.content.startswith("!rq")):
+        global queue
+        queue= message.author.guild.get_channel(waiting_room).members
+        await message.channel.send("Queue Reset")
+
+    if (message.content.startswith("!aq")):
+        global auto_queue
+        auto_queue= not auto_queue
+        tmp = "AutoQueue is"
+        tmp += " enabled" if auto_queue else " disabled"
+        await message.channel.send(tmp)
+
     if (message.content.startswith("!q")):
         tmp="Queue:\n"
         x=1
